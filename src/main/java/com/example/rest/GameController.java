@@ -1,14 +1,19 @@
 package com.example.rest;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.entity.games;
+import com.example.entity.turn;
+import com.example.rest.repo.GameRepo;
+import com.example.rest.repo.TurnRepo;
 
 @RestController
 public class GameController {
@@ -20,14 +25,20 @@ public class GameController {
 	  private char[][] grid;
 	  // we store last move made by a player
 	  private int lastCol = -1, lastTop = -1;
-	  private int player=0;
+	  private int player=0;private int moves;
+	  private int gameid;
 	  GameController board;
 	  
+	  @Autowired
+	  private GameRepo gameRepo;
 	  
+	  @Autowired
+	  private TurnRepo turnRepo;
 
 	  public GameController(int w, int h) {
 	    width = w;
 	    height = h;
+	    moves=w*h;
 	    grid = new char[h][];
 
 	    // init the grid will blank cell
@@ -42,7 +53,7 @@ public class GameController {
 		    return new String(grid[lastTop]);
 		  }
 
-		  // get string representation fo the col containing 
+		  // get string representation for the col containing 
 		  // the last play of the user
 		  public String vertical() {
 		    StringBuilder sb = new StringBuilder(height);
@@ -118,7 +129,6 @@ public class GameController {
 		      // check if column is ok
 		      if (!(0 <= col && col < width)) {
 		        System.out.println("Column must be between 0 and " + (width - 1));
-		        //continue;
 		      }
 
 		      // now we can place the symbol to the first 
@@ -137,38 +147,64 @@ public class GameController {
 	@GetMapping("/new")
 	public String newGame() {
 		
-		int height = 6; int width = 8; int moves = height * width;
+		int height = 6; int width = 8;
 		GameController newBoard=new GameController(width,height);
 		board=newBoard;
+		games g=new games();
+		g.setWinner(0);
+		gameRepo.save(g);
+		gameid=g.getId();
+		System.out.println(gameid);
 		return "auth token";	
 	}
 	
 	@PostMapping("/turn")
-	public boolean turn(@RequestBody Map<String, Integer> payload) {
+	public String turn(@RequestBody Map<String, Integer> payload) {
 		//proceed only if token
 		int user=(payload.get("user"));
 		char symbol = PLAYERS[user];
+		String s="";
 		if(user!=player) {
 			int x=payload.get("move");
 			System.out.println(x);
 			board.chooseAndDrop(symbol, x);
 			player=1-player;
+			s+=Arrays.deepToString(board.grid);
+			//save move in db
+			turn m=new turn();
+			m.setMove(s);
+			m.setPlayer(user);
+			m.setGameid(gameid);
+			turnRepo.save(m);
+			
+		}else {
+			return "wrong player";
 		}
 		boolean x=board.isWinningPlay();
 		if (x) {
 	          System.out.println("\nPlayer " + symbol + " wins!");
+	          //expire token
+	          games g= gameRepo.findById(gameid).orElseThrow();
+	         // System.out.println(g);
+	          if(symbol=='R')
+	        	  g.setWinner(1);
+	          else
+	        	  g.setWinner(2);
+	          gameRepo.save(g);
 	        }
-		return x;	
+		return s;	
 	}
 	
 	@GetMapping("/list")
-	public String gamesList() {
-		return "games";
+	public List<games> listGames(){
+		//System.out.println("1");
+		return gameRepo.findAll();
 	}
 	
 	@GetMapping("/moves")
-	public String Moves() {
-		return "moves";
+	public List<turn> listTurns(){
+		//System.out.println("1");
+		return turnRepo.findAll();
 	}
 	
 }

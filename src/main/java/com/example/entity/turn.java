@@ -10,16 +10,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name="turn")
 public class turn {
-	
-	public turn(int turnid, int player, int gameid) {
-		this.turnid = turnid;
-		this.player = player;
-		this.gameid = gameid;
-	}
 
 	@Override
 	public String toString() {
-		return "turn [turnid=" + turnid + ", player=" + player + ", gameid=" + gameid + "]";
+		return "turn [turnid=" + turnid + ", player=" + player + ", gameid=" + gameid + ", move=" + move + "]";
 	}
 
 	public int getTurnid() {
@@ -38,9 +32,35 @@ public class turn {
 		this.player = player;
 	}
 
+	public turn(int turnid, int player, int gameid, String move) {
+		this.player = player;
+		this.gameid = gameid;
+		this.move = move;
+	}
+	
+	public turn() {
+		
+	}
+
+	public int getGameid() {
+		return gameid;
+	}
+
+	public void setGameid(int gameid) {
+		this.gameid = gameid;
+	}
+
+	public String getMove() {
+		return move;
+	}
+
+	public void setMove(String move) {
+		this.move = move;
+	}
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id")
+	@Column(name="turnid")
 	int turnid;
 	
 	@Column(name="player")
@@ -48,5 +68,8 @@ public class turn {
 	
 	@Column(name="gameid")
 	int gameid;
+	
+	@Column(name="move")
+	String move;
 	
 }

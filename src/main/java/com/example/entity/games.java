@@ -19,4 +19,33 @@ public class games {
 	@Column(name="winner")
 	int winner;
 
+	public games(int winner) {
+		this.winner = winner;
+	}
+
+	public int getId() {
+		return id;
+	}
+	
+	public games() {
+		
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "games [id=" + id + ", winner=" + winner + "]";
+	}
+
+	public int getWinner() {
+		return winner;
+	}
+
+	public void setWinner(int winner) {
+		this.winner = winner;
+	}
+
 }
