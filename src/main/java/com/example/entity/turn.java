@@ -5,11 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="turn")
-public class turn {
+@Table(name = "turn")
+public class Turn {
 
 	@Override
 	public String toString() {
@@ -32,14 +34,14 @@ public class turn {
 		this.player = player;
 	}
 
-	public turn(int turnid, int player, int gameid, String move) {
+	public Turn(int turnid, int player, int gameid, String move) {
 		this.player = player;
 		this.gameid = gameid;
 		this.move = move;
 	}
-	
-	public turn() {
-		
+
+	public Turn() {
+
 	}
 
 	public int getGameid() {
@@ -59,17 +61,21 @@ public class turn {
 	}
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="turnid")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "turnid")
 	int turnid;
-	
-	@Column(name="player")
+
+	@Column(name = "player")
 	int player;
-	
-	@Column(name="gameid")
+
+	@Column(name = "gameid")
 	int gameid;
-	
-	@Column(name="move")
+
+	@Column(name = "move")
 	String move;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "gameid", nullable = false, insertable = false, updatable = false)
+	private Games game;
+
 }
