@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,21 +15,20 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.example.ConnectFour.Utility;
+import com.example.ConnectFour.JWT;
+import com.example.ConnectFour.StaticApplicationContext;
 import com.example.entity.Games;
 import com.example.rest.repo.GameRepo;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-	@Autowired
-	private GameRepo gameRepo;
-	
 	private AuthenticationManager authenticationManager;
+	private GameRepo gameRepo=(GameRepo)StaticApplicationContext.getContext().getBean("gameRepo");
 	
-	public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
 		this.authenticationManager = authenticationManager;
 	}
-	
+
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
 			throws AuthenticationException {
@@ -60,22 +58,24 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		Games game = new Games();
 		game.setWinner(0);
 		game.setExpired(false);
-		//System.out.println(game.toString());
+		//GameRepo g=utility.getGameRepo();
+		//System.out.println(g);
 		gameRepo.save(game);
-		//int gameid = game.getId();
-		//System.out.println(gameid);
+		int gameid = game.getId();
+		System.out.println(gameid);
 		//String token = (new GameController()).newGame();
-		//Object user=(auth.getPrincipal());
-		//String username = ((UserDetails)user).getUsername();
+		Object user=(auth.getPrincipal());
+		String username = ((UserDetails)user).getUsername();
 		//System.out.println(applicationContext);
 		//GameRepo gameRepo=(GameRepo)applicationContext.getBean(GameRepo.class);
 		
 		//System.out.println(username);
-		//String jwt = JWT.jwt(gameid,username);
+		String jwt = JWT.jwt(gameid,username);
 
-		//String body = (username+ " " + jwt);
-
-		//res.getWriter().write(body);
-		//res.getWriter().flush();
+		String body = (username+ " " + jwt);
+		game.setToken(jwt);
+		gameRepo.save(game);
+		res.getWriter().write(body);
+		res.getWriter().flush();
 	}
 }

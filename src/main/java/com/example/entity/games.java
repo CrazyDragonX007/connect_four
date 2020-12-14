@@ -1,6 +1,6 @@
 package com.example.entity;
 
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,7 +45,7 @@ public class Games {
 	}
 
 	@OneToMany(mappedBy = "game")
-	private Set<Turn> turns;
+	private List<Turn> turns;
 
 	public Games(int winner) {
 		this.winner = winner;

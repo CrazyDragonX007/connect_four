@@ -43,27 +43,20 @@ public class GameController {
 	int moves;
 
 	@GetMapping("/new")
-	public String newGame() {
-
+	public void newGame(@RequestHeader("Authorization") String jwt) {
 		int height = 6;
 		int width = 8;
 		board = new GameService(width, height);
 		moves = board.getMoves();
 		player = board.getPlayer();
 		Games game = new Games();
-		game.setWinner(0);
-		game.setExpired(false);
-		gameRepo.save(game);
-		gameid = game.getId();
+		Claims cls = JWT.decodeJWT(jwt);
+		gameid = Integer.parseInt((String) cls.get("sub"));
 		System.out.println(gameid);
-		String jwt = JWT.jwt(gameid,"");
-		game.setToken(jwt);
-		gameRepo.save(game);
-		return jwt;
 	}
 
 	@PostMapping("/turn")
-	public String turn(@RequestBody Map<String,Integer> payload, @RequestHeader("Auth") String jwt) {
+	public String turn(@RequestBody Map<String,Integer> payload, @RequestHeader("Authorization") String jwt) {
 		//board = new GameService(6,8);
 		Claims cls = JWT.decodeJWT(jwt);
 		int gameId = Integer.parseInt((String) cls.get("sub"));
