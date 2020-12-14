@@ -1,6 +1,32 @@
 package com.example.ConnectFour;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.entity.Games;
+import com.example.rest.repo.GameRepo;
+
+@Service
 public class Utility {
+	
+	//@Autowired
+	private GameRepo gameRepo;
+	
+//	public Utility(GameRepo gameRepo) {
+//		this.gameRepo=gameRepo;
+//	}
+	
+	private int gameid;
+	
+	public void newGame() {
+		Games game = new Games();
+		game.setWinner(0);
+		game.setExpired(false);
+		System.out.println(gameRepo);
+		gameRepo.save(game);
+		gameid = game.getId();
+		System.out.println(gameid);
+	}
 
 	public static char[][] stringToDeep(String s2) {
 		//String s2="[[., ., ., ., ., ., ., .], [., ., ., ., ., ., ., .], [., ., ., ., ., ., ., .], [., ., ., ., ., ., ., .], [., ., ., ., ., ., ., .], [., ., ., ., ., R, ., .]]";

@@ -11,12 +11,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JWT {
 	
-	public static String jwt(int id) {
-	
+	public static String jwt(int id, String user) {
+		
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 		byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(getSignatureKey());
 	    Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());  
-	    String jwt = Jwts.builder().setIssuer("localhost")  
+	    String jwt = Jwts.builder().setIssuer(user)  
 	    			.setSubject(Integer.toString(id))
 	    			.signWith(SignatureAlgorithm.HS256,signingKey)  
 	    			.compact();

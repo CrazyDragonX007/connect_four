@@ -56,7 +56,7 @@ public class GameController {
 		gameRepo.save(game);
 		gameid = game.getId();
 		System.out.println(gameid);
-		String jwt = JWT.jwt(gameid);
+		String jwt = JWT.jwt(gameid,"");
 		game.setToken(jwt);
 		gameRepo.save(game);
 		return jwt;
@@ -134,7 +134,7 @@ public class GameController {
 
 	@GetMapping("/list")
 	public List<Games> listGames() {
-		// System.out.println("1");
+		System.out.println("1");
 		return gameRepo.findAll();
 	}
 

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 
@@ -29,9 +30,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "MANAGER","EMPLOYEE").anyRequest()
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "MANAGER","EMPLOYEE","").anyRequest()
 				.authenticated().and().formLogin().permitAll().and().cors().and().csrf().disable();
+		http.addFilter(new JWTAuthenticationFilter(authenticationManager()))
+        .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+         //this disables session creation on Spring Security
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+}
 
 	}
 
-}
+
