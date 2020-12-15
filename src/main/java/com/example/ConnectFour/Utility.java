@@ -5,6 +5,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class Utility {
 	
+//	public HibernateJpaSessionFactoryBean sessionFactory(EntityManagerFactory emf) {
+//	    HibernateJpaSessionFactoryBean fact = new HibernateJpaSessionFactoryBean();
+//	    fact.setEntityManagerFactory(emf);
+//	    return fact;
+//	}
+	
+//	@Autowired
+//	private EntityManagerFactory entityManagerFactory;
+//
+//	@Bean
+//	public SessionFactory getSessionFactory() {
+//	    if (entityManagerFactory.unwrap(SessionFactory.class) == null) {
+//	        throw new NullPointerException("factory is not a hibernate factory");
+//	    }
+//	    return entityManagerFactory.unwrap(SessionFactory.class);
+//	}
+	
 	public static char[][] stringToDeep(String s2) {
 		//String s2="[[., ., ., ., ., ., ., .], [., ., ., ., ., ., ., .], [., ., ., ., ., ., ., .], [., ., ., ., ., ., ., .], [., ., ., ., ., ., ., .], [., ., ., ., ., R, ., .]]";
 	    int row = 0;

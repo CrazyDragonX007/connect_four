@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ConnectFour.JWT;
 import com.example.ConnectFour.Utility;
-import com.example.entity.Games;
+import com.example.entity.Game;
 import com.example.entity.Turn;
 import com.example.rest.repo.GameRepo;
 import com.example.rest.repo.TurnRepo;
@@ -27,7 +27,7 @@ import io.jsonwebtoken.Claims;
 public class GameController {
 
 	private int gameid, player;
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
 
@@ -49,34 +49,34 @@ public class GameController {
 		board = new GameService(width, height);
 		moves = board.getMoves();
 		player = board.getPlayer();
-		Games game = new Games();
 		Claims cls = JWT.decodeJWT(jwt);
 		gameid = Integer.parseInt((String) cls.get("sub"));
 		System.out.println(gameid);
 	}
 
 	@PostMapping("/turn")
-	public String turn(@RequestBody Map<String,Integer> payload, @RequestHeader("Authorization") String jwt) {
-		//board = new GameService(6,8);
+	public String turn(@RequestBody Map<String, Integer> payload, @RequestHeader("Authorization") String jwt) {
+		// board = new GameService(6,8);
 		Claims cls = JWT.decodeJWT(jwt);
 		int gameId = Integer.parseInt((String) cls.get("sub"));
-		//System.out.println(gameId);
-		Games game = gameRepo.findById(gameId).orElseThrow();
+		// System.out.println(gameId);
+		Game game = gameRepo.findById(gameId).orElseThrow();
 		// proceed only if token not expired
 		if (game.getExpired()) {
 			return "Invalid game";
 		}
 		Session session = sessionFactory.openSession();
-		String queryString="from Turn where gameid="+gameId+" order by turnid DESC";
-		Query query=session.createQuery(queryString);
-		List result=query.getResultList();
-		if(board.getMoves() == 0) {
-			//System.out.println("1");
-			board = new GameService(8,6);}
-		if(!(result.isEmpty())) {
-			Turn turn=(Turn) result.get(0);
-			String move=turn.getMove();
-			char grid[][]=Utility.stringToDeep(move);
+		String queryString = "from Turn where gameid=" + gameId + " order by turnid DESC";
+		Query query = session.createQuery(queryString);
+		List result = query.getResultList();
+		if (board.getMoves() == 0) {
+			// System.out.println("1");
+			board = new GameService(8, 6);
+		}
+		if (!(result.isEmpty())) {
+			Turn turn = (Turn) result.get(0);
+			String move = turn.getMove();
+			char grid[][] = Utility.stringToDeep(move);
 			board.setGrid(grid);
 		}
 		moves--;
@@ -86,49 +86,36 @@ public class GameController {
 			gameRepo.save(game);
 			return "Draw";
 		}
-		// int user = (payload.get("user"));
-		// GameService gs=new GameService();
 		char symbol = GameService.getPlayer(player);
 		String state = "";
-		
-		// if (user != player) {
 		int move = payload.get("move");
-		// System.out.println(move);
-		String res=board.chooseAndDrop(symbol, move);
-		if(res!="true")
+		String res = board.chooseAndDrop(symbol, move);
+		if (res != "true")
 			return res;
 		state += Arrays.deepToString(board.getGrid());
 		// save move in db
-		//System.out.println(state);
 		Turn turn = new Turn();
 		turn.setMove(state);
 		turn.setPlayer(player);
 		turn.setGameid(gameId);
 		turnRepo.save(turn);
 		player = 1 - player;
-		// } else {
-		// moves++;
-		// return "wrong player";
-		// }
 		boolean won = board.isWinningPlay();
 		if (won) {
-			// System.out.println("\nPlayer " + symbol + " wins!");
-			// System.out.println(g);
 			game.setExpired(true);
 			if (symbol == 'R')
 				game.setWinner(1);
 			else
 				game.setWinner(2);
 			gameRepo.save(game);
-			return symbol+" won";
+			return symbol + " won";
 		}
 		return "Success";
 	}
 
 	@GetMapping("/list")
-	public List<Games> listGames() {
+	public List<Game> listGames() {
 		System.out.println("1");
 		return gameRepo.findAll();
 	}
-
 }

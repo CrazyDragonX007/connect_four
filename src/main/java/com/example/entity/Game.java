@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "games")
-public class Games {
+public class Game {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +47,7 @@ public class Games {
 	@OneToMany(mappedBy = "game")
 	private List<Turn> turns;
 
-	public Games(int winner) {
+	public Game(int winner) {
 		this.winner = winner;
 	}
 
@@ -55,7 +55,7 @@ public class Games {
 		return id;
 	}
 
-	public Games() {
+	public Game() {
 
 	}
 

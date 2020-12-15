@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import com.example.ConnectFour.Utility;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -25,19 +23,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// UserBuilder users = User.withDefaultPasswordEncoder();
 		// auth.inMemoryAuthentication().withUser(users.username("a").password("a").roles("DEFAULT"));
 		auth.jdbcAuthentication().dataSource(securityDataSource);
-		
+
 	}
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "MANAGER","EMPLOYEE","").anyRequest()
-				.authenticated().and().formLogin().permitAll().and().cors().and().csrf().disable();
+		http.authorizeRequests().antMatchers(HttpMethod.GET, "/**").hasAnyRole("ADMIN", "MANAGER", "EMPLOYEE", "")
+				.anyRequest().authenticated().and().formLogin().permitAll().and().cors().and().csrf().disable();
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager()))
-        .addFilter(new JWTAuthorizationFilter(authenticationManager()))
-         //this disables session creation on Spring Security
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-}
-
+				.addFilter(new JWTAuthorizationFilter(authenticationManager()))
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 
-
+}

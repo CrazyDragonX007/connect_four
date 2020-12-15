@@ -76,6 +76,6 @@ public class Turn {
 
 	@ManyToOne
 	@JoinColumn(name = "gameid", nullable = false, insertable = false, updatable = false)
-	private Games game;
+	private Game game;
 
 }

@@ -11,6 +11,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = "com.example.entity" )
 @EnableJpaRepositories(basePackages = {"com.example.rest.repo"})
 public class ConnectFourApplication {
+	
+//	@Bean
+//	public HibernateJpaSessionFactoryBean sessionFactory() {
+//	    return new HibernateJpaSessionFactoryBean();
+//	}
 
 	public static void main(String[] args) {
 

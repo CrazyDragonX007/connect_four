@@ -9,6 +9,11 @@ import javax.persistence.Table;
 @Table(name = "users")
 public class User {
 	
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", password=" + password + "]";
+	}
+
 	@Column(name="username")
 	@Id
 	private String username;
@@ -22,6 +27,15 @@ public class User {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public User(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
+
+	public User() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public void setPassword(String password) {

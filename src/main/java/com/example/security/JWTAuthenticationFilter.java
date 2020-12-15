@@ -17,15 +17,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.example.ConnectFour.JWT;
 import com.example.ConnectFour.StaticApplicationContext;
-import com.example.entity.Games;
+import com.example.entity.Game;
 import com.example.rest.repo.GameRepo;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 	private AuthenticationManager authenticationManager;
-	private GameRepo gameRepo=(GameRepo)StaticApplicationContext.getContext().getBean("gameRepo");
-	
-public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
+	private GameRepo gameRepo = (GameRepo) StaticApplicationContext.getContext().getBean("gameRepo");
+
+	public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
 		this.authenticationManager = authenticationManager;
 	}
 
@@ -34,17 +34,15 @@ public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
 			throws AuthenticationException {
 		try {
 			String result = IOUtils.toString(req.getInputStream());
-			//String user=req.getInputStream().readAllBytes().toString();
-			int x=result.indexOf("=");
-			int y=result.indexOf('&');
-			String username=result.substring(x+1, y);
+			int x = result.indexOf("=");
+			int y = result.indexOf('&');
+			String username = result.substring(x + 1, y);
 			System.out.println(username);
-			//User creds = new ObjectMapper().readValue(req.getInputStream(), User.class);
-			int a=result.indexOf("password=");
-			String password=result.substring(a+9);
+			int a = result.indexOf("password=");
+			String password = result.substring(a + 9);
 			System.out.println(password);
-			return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,
-					password, new ArrayList<>()));
+			return authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(username, password, new ArrayList<>()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -53,26 +51,17 @@ public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
 	@Override
 	public void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
 			Authentication auth) throws IOException {
-		
-		//new Utility(gameRepo).newGame();
-		Games game = new Games();
+
+		Game game = new Game();
 		game.setWinner(0);
 		game.setExpired(false);
-		//GameRepo g=utility.getGameRepo();
-		//System.out.println(g);
 		gameRepo.save(game);
 		int gameid = game.getId();
 		System.out.println(gameid);
-		//String token = (new GameController()).newGame();
-		Object user=(auth.getPrincipal());
-		String username = ((UserDetails)user).getUsername();
-		//System.out.println(applicationContext);
-		//GameRepo gameRepo=(GameRepo)applicationContext.getBean(GameRepo.class);
-		
-		//System.out.println(username);
-		String jwt = JWT.jwt(gameid,username);
-
-		String body = (username+ " " + jwt);
+		Object user = (auth.getPrincipal());
+		String username = ((UserDetails) user).getUsername();
+		String jwt = JWT.jwt(gameid, username);
+		String body = (username + " " + jwt);
 		game.setToken(jwt);
 		gameRepo.save(game);
 		res.getWriter().write(body);
